@@ -3231,11 +3231,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/zahar/Рабочий стол/projects/KanbanTaskTracker/backend/KanbanApi/KanbanApi.csproj",
+      "projectUniqueName": "/home/zahar/projects/KanbanTaskTracker/backend/KanbanApi/KanbanApi.csproj",
       "projectName": "KanbanApi",
-      "projectPath": "/home/zahar/Рабочий стол/projects/KanbanTaskTracker/backend/KanbanApi/KanbanApi.csproj",
+      "projectPath": "/home/zahar/projects/KanbanTaskTracker/backend/KanbanApi/KanbanApi.csproj",
       "packagesPath": "/home/zahar/.nuget/packages/",
-      "outputPath": "/home/zahar/Рабочий стол/projects/KanbanTaskTracker/backend/KanbanApi/obj/",
+      "outputPath": "/home/zahar/projects/KanbanTaskTracker/backend/KanbanApi/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/zahar/.nuget/NuGet/NuGet.Config"

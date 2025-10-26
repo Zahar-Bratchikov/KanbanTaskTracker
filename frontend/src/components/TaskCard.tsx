@@ -1,3 +1,4 @@
+// src/components/TaskCard.tsx
 import React from 'react';
 import { Task } from '../types/Task';
 
@@ -5,40 +6,53 @@ interface TaskCardProps {
     task: Task;
     onEdit: (task: Task) => void;
     onDelete: (id: string) => void;
+    darkMode: boolean;
 }
 
 const statusColors: Record<Task['status'], string> = {
-    todo: '#4f46e5',        // indigo
-    in_progress: '#f59e0b', // amber
-    done: '#10b981',        // emerald
+    todo: '#4f46e5',
+    in_progress: '#f59e0b',
+    done: '#10b981',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, darkMode }) => {
     return (
         <div
             draggable
             onDragStart={(e) => e.dataTransfer.setData('taskId', task.id)}
             style={{
-                background: 'white',
+                background: darkMode ? '#1e293b' : 'white',
                 borderRadius: '12px',
                 padding: '16px',
                 marginBottom: '12px',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                boxShadow: darkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.08)',
                 borderLeft: `4px solid ${statusColors[task.status]}`,
                 cursor: 'move',
-                transition: 'box-shadow 0.2s',
+                transition: 'box-shadow 0.2s, transform 0.1s',
+                color: darkMode ? '#f1f5f9' : '#1e293b',
+                border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)')}
-            onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.08)')}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = darkMode
+                    ? '0 4px 16px rgba(0,0,0,0.4)'
+                    : '0 4px 12px rgba(0,0,0,0.12)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = darkMode
+                    ? '0 2px 8px rgba(0,0,0,0.3)'
+                    : '0 2px 6px rgba(0,0,0,0.08)';
+                e.currentTarget.style.transform = 'translateY(0)';
+            }}
         >
-            <h4 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '600', color: '#1e293b' }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '600' }}>
                 {task.title}
             </h4>
-            <p style={{ margin: '0 0 12px', fontSize: '14px', color: '#64748b', lineHeight: 1.4 }}>
+            <p style={{ margin: '0 0 12px', fontSize: '14px', color: darkMode ? '#94a3b8' : '#64748b', lineHeight: 1.4 }}>
                 {task.description}
             </p>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <small style={{ color: '#94a3b8', fontSize: '12px' }}>
+                <small style={{ color: darkMode ? '#64748b' : '#94a3b8', fontSize: '12px' }}>
                     {new Date(task.updatedAt).toLocaleDateString()}
                 </small>
                 <div>
@@ -47,13 +61,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) =>
                         style={{
                             background: 'none',
                             border: 'none',
-                            color: '#64748b',
+                            color: darkMode ? '#94a3b8' : '#64748b',
                             cursor: 'pointer',
                             marginRight: '8px',
                             padding: '4px',
                             borderRadius: '4px',
+                            transition: 'background 0.2s',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = darkMode ? '#334155' : '#f1f5f9')}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
                     >
                         ✏️
@@ -67,8 +82,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) =>
                             cursor: 'pointer',
                             padding: '4px',
                             borderRadius: '4px',
+                            transition: 'background 0.2s',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = '#fef2f2')}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = darkMode ? '#3b1111' : '#fef2f2')}
                         onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
                     >
                         🗑️

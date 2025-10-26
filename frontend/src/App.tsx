@@ -1,11 +1,51 @@
-import React from 'react';
+// src/App.tsx
+import React, { useState, useEffect } from 'react';
 import { KanbanBoard } from './components/KanbanBoard';
 
 export default function App() {
+    const [darkMode, setDarkMode] = useState<boolean>(() => {
+        const saved = localStorage.getItem('kanban-dark-mode');
+        if (saved !== null) return saved === 'true';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('kanban-dark-mode', String(darkMode));
+        if (darkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [darkMode]);
+
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+      html, body {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        background: ${darkMode ? '#0f172a' : '#f8fafc'};
+        color: ${darkMode ? '#f1f5f9' : '#1e293b'};
+        font-family: system-ui, -apple-system, sans-serif;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+      }
+      * {
+        box-sizing: border-box;
+      }
+    `;
+        document.head.appendChild(style);
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, [darkMode]);
+
     return (
-        <div>
-            <h1>Kanban Task Tracker</h1>
-            <KanbanBoard />
+        <div className={darkMode ? 'dark' : ''} style={{ minHeight: '100vh' }}>
+            <KanbanBoard darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
         </div>
     );
 }

@@ -1,15 +1,21 @@
+// src/components/KanbanBoard.tsx
 import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus } from '../types/Task';
 import { api } from '../services/api';
 import { TaskCard } from './TaskCard';
 
-const columnConfig: Record<TaskStatus, { title: string; color: string }> = {
-    todo: { title: 'To Do', color: '#e0e7ff' },
-    in_progress: { title: 'In Progress', color: '#fef3c7' },
-    done: { title: 'Done', color: '#d1fae5' },
+const columnConfig: Record<TaskStatus, { title: string; light: string; dark: string }> = {
+    todo: { title: 'To Do', light: '#e0e7ff', dark: '#1e293b' },
+    in_progress: { title: 'In Progress', light: '#fef3c7', dark: '#1e293b' },
+    done: { title: 'Done', light: '#d1fae5', dark: '#064e3b' },
 };
 
-export const KanbanBoard: React.FC = () => {
+interface KanbanBoardProps {
+    darkMode: boolean;
+    toggleDarkMode: () => void;
+}
+
+export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMode }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [newTask, setNewTask] = useState({ title: '', description: '' });
@@ -87,16 +93,77 @@ export const KanbanBoard: React.FC = () => {
     }, {} as Record<TaskStatus, Task[]>);
 
     return (
-        <div style={{ padding: '32px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-            <header style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1e293b' }}>Kanban Task Tracker</h1>
-                <p style={{ color: '#64748b', fontSize: '1.1rem' }}>Перетаскивайте задачи между колонками</p>
+        <div
+            style={{
+                padding: '32px',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                background: darkMode ? '#0f172a' : '#f8fafc',
+                minHeight: '100vh',
+                color: darkMode ? '#f1f5f9' : '#1e293b',
+                transition: 'background 0.3s ease',
+            }}
+        >
+            <header
+                style={{
+                    textAlign: 'center',
+                    marginBottom: '32px',
+                    padding: '20px',
+                    background: darkMode ? '#1e293b' : '#ffffff',
+                    borderRadius: '16px',
+                    boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
+                }}
+            >
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: darkMode ? '#f1f5f9' : '#1e293b' }}>
+                        Kanban Task Tracker
+                    </h1>
+                    <button
+                        onClick={toggleDarkMode}
+                        style={{
+                            background: darkMode ? '#334155' : '#e2e8f0',
+                            border: 'none',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: darkMode ? '#f1f5f9' : '#1e293b',
+                            fontSize: '18px',
+                            transition: 'background 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = darkMode ? '#475569' : '#cbd5e1';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = darkMode ? '#334155' : '#e2e8f0';
+                        }}
+                        aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                    >
+                        {darkMode ? '☀️' : '🌙'}
+                    </button>
+                </div>
+                <p style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: '1.1rem', marginTop: '8px' }}>
+                    Перетаскивайте задачи между колонками
+                </p>
             </header>
 
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 {/* Форма добавления */}
-                <div style={{ width: '280px', background: '#f8fafc', borderRadius: '16px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-                    <h3 style={{ margin: '0 0 16px', fontSize: '18px', fontWeight: '600', color: '#1e293b' }}>➕ Новая задача</h3>
+                <div
+                    style={{
+                        width: '280px',
+                        background: darkMode ? '#1e293b' : '#ffffff',
+                        borderRadius: '16px',
+                        padding: '20px',
+                        boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
+                        border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+                    }}
+                >
+                    <h3 style={{ margin: '0 0 16px', fontSize: '18px', fontWeight: '600', color: darkMode ? '#f1f5f9' : '#1e293b' }}>
+                        ➕ Новая задача
+                    </h3>
                     <input
                         value={newTask.title}
                         onChange={e => setNewTask({ ...newTask, title: e.target.value })}
@@ -105,10 +172,20 @@ export const KanbanBoard: React.FC = () => {
                             width: '100%',
                             padding: '10px 12px',
                             marginBottom: '12px',
-                            border: '1px solid #cbd5e1',
+                            border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
                             borderRadius: '8px',
                             fontSize: '14px',
                             outline: 'none',
+                            background: darkMode ? '#0f172a' : 'white',
+                            color: darkMode ? '#f1f5f9' : '#1e293b',
+                            transition: 'border 0.2s',
+                            boxSizing: 'border-box',
+                        }}
+                        onFocus={(e) => {
+                            e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
+                        }}
+                        onBlur={(e) => {
+                            e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
                         }}
                     />
                     <textarea
@@ -120,11 +197,21 @@ export const KanbanBoard: React.FC = () => {
                             width: '100%',
                             padding: '10px 12px',
                             marginBottom: '16px',
-                            border: '1px solid #cbd5e1',
+                            border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
                             borderRadius: '8px',
                             fontSize: '14px',
                             outline: 'none',
                             resize: 'vertical',
+                            background: darkMode ? '#0f172a' : 'white',
+                            color: darkMode ? '#f1f5f9' : '#1e293b',
+                            transition: 'border 0.2s',
+                            boxSizing: 'border-box',
+                        }}
+                        onFocus={(e) => {
+                            e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
+                        }}
+                        onBlur={(e) => {
+                            e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
                         }}
                     />
                     <button
@@ -133,7 +220,7 @@ export const KanbanBoard: React.FC = () => {
                         style={{
                             width: '100%',
                             padding: '10px',
-                            background: newTask.title.trim() ? '#4f46e5' : '#cbd5e1',
+                            background: newTask.title.trim() ? (darkMode ? '#4f46e5' : '#4f46e5') : (darkMode ? '#334155' : '#cbd5e1'),
                             color: 'white',
                             border: 'none',
                             borderRadius: '8px',
@@ -142,10 +229,14 @@ export const KanbanBoard: React.FC = () => {
                             transition: 'background 0.2s',
                         }}
                         onMouseEnter={(e) => {
-                            if (newTask.title.trim()) e.currentTarget.style.background = '#4338ca';
+                            if (newTask.title.trim()) {
+                                e.currentTarget.style.background = darkMode ? '#4338ca' : '#4338ca';
+                            }
                         }}
                         onMouseLeave={(e) => {
-                            if (newTask.title.trim()) e.currentTarget.style.background = '#4f46e5';
+                            if (newTask.title.trim()) {
+                                e.currentTarget.style.background = darkMode ? '#4f46e5' : '#4f46e5';
+                            }
                         }}
                     >
                         Добавить задачу
@@ -157,21 +248,23 @@ export const KanbanBoard: React.FC = () => {
                     <div key={status} style={{ width: '320px' }}>
                         <div
                             style={{
-                                background: config.color,
+                                background: darkMode ? config.dark : config.light,
                                 borderRadius: '16px 16px 0 0',
                                 padding: '12px 16px',
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
+                                borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+                                color: darkMode ? '#f1f5f9' : '#1e293b',
                             }}
                         >
-                            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1e293b' }}>
+                            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
                                 {config.title}
                             </h2>
                             <span
                                 style={{
-                                    background: 'white',
-                                    color: '#64748b',
+                                    background: darkMode ? '#334155' : 'white',
+                                    color: darkMode ? '#94a3b8' : '#64748b',
                                     borderRadius: '50%',
                                     width: '24px',
                                     height: '24px',
@@ -190,15 +283,16 @@ export const KanbanBoard: React.FC = () => {
                             onDrop={e => handleDrop(status as TaskStatus, e)}
                             style={{
                                 minHeight: '500px',
-                                background: '#f8fafc',
+                                background: darkMode ? '#0f172a' : '#ffffff',
                                 borderRadius: '0 0 16px 16px',
                                 padding: '16px',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                                border: '1px dashed #cbd5e1',
+                                boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
+                                border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+                                overflowY: 'auto',
                             }}
                         >
                             {tasksByStatus[status as TaskStatus].length === 0 ? (
-                                <div style={{ textAlign: 'center', color: '#94a3b8', padding: '20px 0' }}>
+                                <div style={{ textAlign: 'center', color: darkMode ? '#64748b' : '#94a3b8', padding: '20px 0' }}>
                                     <div>📭 Нет задач</div>
                                     <div style={{ fontSize: '12px', marginTop: '4px' }}>Перетащите сюда или создайте новую</div>
                                 </div>
@@ -209,6 +303,7 @@ export const KanbanBoard: React.FC = () => {
                                         task={task}
                                         onEdit={setEditingTask}
                                         onDelete={handleDeleteTask}
+                                        darkMode={darkMode}
                                     />
                                 ))
                             )}
@@ -226,7 +321,7 @@ export const KanbanBoard: React.FC = () => {
                         left: 0,
                         width: '100vw',
                         height: '100vh',
-                        background: 'rgba(0,0,0,0.5)',
+                        background: darkMode ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.5)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -236,16 +331,17 @@ export const KanbanBoard: React.FC = () => {
                 >
                     <div
                         style={{
-                            background: 'white',
+                            background: darkMode ? '#1e293b' : 'white',
                             borderRadius: '16px',
                             padding: '24px',
                             width: '400px',
                             maxWidth: '90vw',
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                            boxShadow: darkMode ? '0 10px 30px rgba(0,0,0,0.5)' : '0 10px 25px rgba(0,0,0,0.2)',
+                            border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
                         }}
                         onClick={e => e.stopPropagation()}
                     >
-                        <h3 style={{ margin: '0 0 20px', fontSize: '20px', fontWeight: '600', color: '#1e293b' }}>
+                        <h3 style={{ margin: '0 0 20px', fontSize: '20px', fontWeight: '600', color: darkMode ? '#f1f5f9' : '#1e293b' }}>
                             Редактировать задачу
                         </h3>
                         <input
@@ -256,10 +352,19 @@ export const KanbanBoard: React.FC = () => {
                                 width: '100%',
                                 padding: '12px',
                                 marginBottom: '16px',
-                                border: '1px solid #cbd5e1',
+                                border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
                                 borderRadius: '8px',
                                 fontSize: '16px',
                                 outline: 'none',
+                                background: darkMode ? '#0f172a' : 'white',
+                                color: darkMode ? '#f1f5f9' : '#1e293b',
+                                transition: 'border 0.2s',
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
                             }}
                         />
                         <textarea
@@ -271,11 +376,20 @@ export const KanbanBoard: React.FC = () => {
                                 width: '100%',
                                 padding: '12px',
                                 marginBottom: '20px',
-                                border: '1px solid #cbd5e1',
+                                border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
                                 borderRadius: '8px',
                                 fontSize: '14px',
                                 outline: 'none',
                                 resize: 'vertical',
+                                background: darkMode ? '#0f172a' : 'white',
+                                color: darkMode ? '#f1f5f9' : '#1e293b',
+                                transition: 'border 0.2s',
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
                             }}
                         />
                         <div style={{ display: 'flex', gap: '12px' }}>
@@ -290,6 +404,13 @@ export const KanbanBoard: React.FC = () => {
                                     borderRadius: '8px',
                                     fontWeight: '600',
                                     cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = '#4338ca';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = '#4f46e5';
                                 }}
                             >
                                 Сохранить
@@ -299,12 +420,19 @@ export const KanbanBoard: React.FC = () => {
                                 style={{
                                     flex: 1,
                                     padding: '10px',
-                                    background: '#f1f5f9',
-                                    color: '#1e293b',
-                                    border: '1px solid #cbd5e1',
+                                    background: darkMode ? '#334155' : '#f1f5f9',
+                                    color: darkMode ? '#f1f5f9' : '#1e293b',
+                                    border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
                                     borderRadius: '8px',
                                     fontWeight: '600',
                                     cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = darkMode ? '#475569' : '#e2e8f0';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = darkMode ? '#334155' : '#f1f5f9';
                                 }}
                             >
                                 Отмена
