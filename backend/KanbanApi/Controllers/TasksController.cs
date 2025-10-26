@@ -28,6 +28,13 @@ public class TasksController : ControllerBase
         task.Id = Guid.NewGuid();
         task.CreatedAt = DateTime.UtcNow;
         task.UpdatedAt = DateTime.UtcNow;
+
+        // Преобразуем Deadline в UTC
+        if (task.Deadline.HasValue)
+        {
+            task.Deadline = DateTime.SpecifyKind(task.Deadline.Value, DateTimeKind.Utc);
+        }
+
         _context.Tasks.Add(task);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetTasks), task);
@@ -42,6 +49,17 @@ public class TasksController : ControllerBase
         task.Title = updatedTask.Title;
         task.Description = updatedTask.Description;
         task.Status = updatedTask.Status;
+
+        // Обработка Deadline
+        if (updatedTask.Deadline.HasValue)
+        {
+            task.Deadline = DateTime.SpecifyKind(updatedTask.Deadline.Value, DateTimeKind.Utc);
+        }
+        else
+        {
+            task.Deadline = null;
+        }
+
         task.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();

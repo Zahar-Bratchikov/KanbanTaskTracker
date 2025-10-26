@@ -5,6 +5,7 @@ export interface Task {
     title: string;
     description: string;
     status: TaskStatus;
+    deadline: string | null;
     createdAt: string;
     updatedAt: string;
 }

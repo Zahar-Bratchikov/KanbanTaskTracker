@@ -1,4 +1,3 @@
-// src/components/KanbanBoard.tsx
 import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus } from '../types/Task';
 import { api } from '../services/api';
@@ -18,7 +17,11 @@ interface KanbanBoardProps {
 export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMode }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
-    const [newTask, setNewTask] = useState({ title: '', description: '' });
+    const [newTask, setNewTask] = useState({
+        title: '',
+        description: '',
+        deadline: null as string | null,
+    });
 
     useEffect(() => {
         loadTasks();
@@ -59,9 +62,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                 title: newTask.title,
                 description: newTask.description,
                 status: 'todo',
+                deadline: newTask.deadline,
             });
             setTasks(prev => [...prev, task]);
-            setNewTask({ title: '', description: '' });
+            setNewTask({ title: '', description: '', deadline: null });
         } catch (err) {
             console.error('Failed to add task', err);
         }
@@ -86,9 +90,17 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
         }
     };
 
+    // Сортировка задач по дедлайну внутри каждого статуса
     const tasksByStatus = Object.keys(columnConfig).reduce((acc, statusKey) => {
         const status = statusKey as TaskStatus;
-        acc[status] = tasks.filter(t => t.status === status);
+        const tasksInStatus = tasks.filter(t => t.status === status);
+        const sorted = [...tasksInStatus].sort((a, b) => {
+            if (!a.deadline && !b.deadline) return 0;
+            if (!a.deadline) return 1;
+            if (!b.deadline) return -1;
+            return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        });
+        acc[status] = sorted;
         return acc;
     }, {} as Record<TaskStatus, Task[]>);
 
@@ -202,6 +214,31 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                             fontSize: '14px',
                             outline: 'none',
                             resize: 'vertical',
+                            background: darkMode ? '#0f172a' : 'white',
+                            color: darkMode ? '#f1f5f9' : '#1e293b',
+                            transition: 'border 0.2s',
+                            boxSizing: 'border-box',
+                        }}
+                        onFocus={(e) => {
+                            e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
+                        }}
+                        onBlur={(e) => {
+                            e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
+                        }}
+                    />
+                    <input
+                        type="datetime-local"
+                        value={newTask.deadline || ''}
+                        onChange={e => setNewTask({ ...newTask, deadline: e.target.value || null })}
+                        placeholder="Дедлайн"
+                        style={{
+                            width: '100%',
+                            padding: '10px 12px',
+                            marginBottom: '16px',
+                            border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            outline: 'none',
                             background: darkMode ? '#0f172a' : 'white',
                             color: darkMode ? '#f1f5f9' : '#1e293b',
                             transition: 'border 0.2s',
@@ -359,6 +396,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                                 background: darkMode ? '#0f172a' : 'white',
                                 color: darkMode ? '#f1f5f9' : '#1e293b',
                                 transition: 'border 0.2s',
+                                boxSizing: 'border-box',
                             }}
                             onFocus={(e) => {
                                 e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
@@ -375,7 +413,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                             style={{
                                 width: '100%',
                                 padding: '12px',
-                                marginBottom: '20px',
+                                marginBottom: '16px',
                                 border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
                                 borderRadius: '8px',
                                 fontSize: '14px',
@@ -384,6 +422,32 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                                 background: darkMode ? '#0f172a' : 'white',
                                 color: darkMode ? '#f1f5f9' : '#1e293b',
                                 transition: 'border 0.2s',
+                                boxSizing: 'border-box',
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
+                            }}
+                        />
+                        <input
+                            type="datetime-local"
+                            value={editingTask.deadline || ''}
+                            onChange={e => setEditingTask({ ...editingTask, deadline: e.target.value || null })}
+                            placeholder="Дедлайн"
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                marginBottom: '20px',
+                                border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                outline: 'none',
+                                background: darkMode ? '#0f172a' : 'white',
+                                color: darkMode ? '#f1f5f9' : '#1e293b',
+                                transition: 'border 0.2s',
+                                boxSizing: 'border-box',
                             }}
                             onFocus={(e) => {
                                 e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
