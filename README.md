@@ -17,7 +17,7 @@ API: http://localhost:5000/api/tasks
 
 ---
 
-## 🐳 docker-compose.yml
+## docker-compose.yml
 
 ```yaml
 version: '3.8'
