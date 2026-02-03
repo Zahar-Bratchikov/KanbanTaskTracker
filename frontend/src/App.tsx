@@ -1,6 +1,6 @@
-// src/App.tsx
 import React, { useState, useEffect } from 'react';
 import { KanbanBoard } from './components/KanbanBoard';
+import styles from './styles/App.module.css';
 
 export default function App() {
     const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -43,8 +43,13 @@ export default function App() {
         };
     }, [darkMode]);
 
+    const theme = darkMode ? 'dark' : 'light';
+
     return (
-        <div className={darkMode ? 'dark' : ''} style={{ minHeight: '100vh' }}>
+        <div 
+            className={`${styles.app} ${styles[theme]}`} 
+            data-testid="app"
+        >
             <KanbanBoard darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
         </div>
     );

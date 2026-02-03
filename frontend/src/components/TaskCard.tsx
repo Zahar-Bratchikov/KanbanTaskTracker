@@ -1,5 +1,6 @@
 import React from 'react';
 import { Task } from '../types/Task';
+import styles from '../styles/TaskCard.module.css';
 
 interface TaskCardProps {
     task: Task;
@@ -8,65 +9,39 @@ interface TaskCardProps {
     darkMode: boolean;
 }
 
-const statusColors: Record<Task['status'], string> = {
-    todo: '#4f46e5',
-    in_progress: '#f59e0b',
-    done: '#10b981',
-};
-
 export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, darkMode }) => {
     const isOverdue =
         task.deadline &&
         task.status !== 'done' &&
         new Date(task.deadline) < new Date();
 
+    const getStatusClass = () => {
+        if (isOverdue) return styles.overdue;
+        if (task.status === 'todo') return styles.todo;
+        if (task.status === 'in_progress') return styles.inProgress;
+        return styles.done;
+    };
+
+    const theme = darkMode ? 'dark' : 'light';
+
     return (
         <div
+            data-testid={`task-card-${task.id}`}
+            className={`${styles.card} ${styles[theme]} ${getStatusClass()} task-card`}
             draggable
             onDragStart={(e) => e.dataTransfer.setData('taskId', task.id)}
-            style={{
-                background: darkMode ? '#1e293b' : 'white',
-                borderRadius: '12px',
-                padding: '16px',
-                marginBottom: '12px',
-                boxShadow: darkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 6px rgba(0,0,0,0.08)',
-                borderLeft: `4px solid ${isOverdue ? '#ef4444' : statusColors[task.status]}`,
-                cursor: 'move',
-                transition: 'box-shadow 0.2s, transform 0.1s',
-                color: darkMode ? '#f1f5f9' : '#1e293b',
-                border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = darkMode
-                    ? '0 4px 16px rgba(0,0,0,0.4)'
-                    : '0 4px 12px rgba(0,0,0,0.12)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = darkMode
-                    ? '0 2px 8px rgba(0,0,0,0.3)'
-                    : '0 2px 6px rgba(0,0,0,0.08)';
-                e.currentTarget.style.transform = 'translateY(0)';
-            }}
         >
-            <h4 style={{ margin: '0 0 8px', fontSize: '16px', fontWeight: '600' }}>
+            <h4 className={styles.title} data-testid="task-title">
                 {task.title}
             </h4>
-            <p style={{ margin: '0 0 12px', fontSize: '14px', color: darkMode ? '#94a3b8' : '#64748b', lineHeight: 1.4 }}>
+            <p className={`${styles.description} ${styles[theme]}`} data-testid="task-description">
                 {task.description}
             </p>
 
-            {/* Отображение дедлайна */}
             {task.deadline && (
                 <div
-                    style={{
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        color: isOverdue
-                            ? (darkMode ? '#fecaca' : '#ef4444')
-                            : (darkMode ? '#fbbf24' : '#d97706'),
-                        marginBottom: '8px',
-                    }}
+                    className={`${styles.deadline} ${isOverdue ? styles.overdue : styles.normal} ${styles[theme]}`}
+                    data-testid="task-deadline"
                 >
                     🕒 {new Date(task.deadline).toLocaleString('ru-RU', {
                         day: '2-digit',
@@ -77,41 +52,24 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, dark
                 </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <small style={{ color: darkMode ? '#64748b' : '#94a3b8', fontSize: '12px' }}>
+            <div className={styles.footer}>
+                <small className={`${styles.updatedDate} ${styles[theme]}`} data-testid="task-updated-date">
                     {new Date(task.updatedAt).toLocaleDateString()}
                 </small>
-                <div>
+                <div className={styles.actions}>
                     <button
+                        className={`${styles.editButton} ${styles[theme]} task-edit-button`}
                         onClick={() => onEdit(task)}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: darkMode ? '#94a3b8' : '#64748b',
-                            cursor: 'pointer',
-                            marginRight: '8px',
-                            padding: '4px',
-                            borderRadius: '4px',
-                            transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = darkMode ? '#334155' : '#f1f5f9')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                        data-testid={`task-edit-button-${task.id}`}
+                        aria-label={`Edit task ${task.title}`}
                     >
                         ✏️
                     </button>
                     <button
+                        className={`${styles.deleteButton} ${styles[theme]} task-delete-button`}
                         onClick={() => onDelete(task.id)}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            padding: '4px',
-                            borderRadius: '4px',
-                            transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = darkMode ? '#3b1111' : '#fef2f2')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                        data-testid={`task-delete-button-${task.id}`}
+                        aria-label={`Delete task ${task.title}`}
                     >
                         🗑️
                     </button>

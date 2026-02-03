@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Task, TaskStatus } from '../types/Task';
 import { api } from '../services/api';
 import { TaskCard } from './TaskCard';
+import styles from '../styles/KanbanBoard.module.css';
 
 const columnConfig: Record<TaskStatus, { title: string; light: string; dark: string }> = {
     todo: { title: 'To Do', light: '#e0e7ff', dark: '#1e293b' },
@@ -22,6 +23,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
         description: '',
         deadline: null as string | null,
     });
+
+    const theme = darkMode ? 'dark' : 'light';
 
     useEffect(() => {
         loadTasks();
@@ -105,399 +108,180 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
     }, {} as Record<TaskStatus, Task[]>);
 
     return (
-        <div
-            style={{
-                padding: '32px',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                background: darkMode ? '#0f172a' : '#f8fafc',
-                minHeight: '100vh',
-                color: darkMode ? '#f1f5f9' : '#1e293b',
-                transition: 'background 0.3s ease',
-            }}
-        >
-            <header
-                style={{
-                    textAlign: 'center',
-                    marginBottom: '32px',
-                    padding: '20px',
-                    background: darkMode ? '#1e293b' : '#ffffff',
-                    borderRadius: '16px',
-                    boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
-                }}
-            >
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: darkMode ? '#f1f5f9' : '#1e293b' }}>
+        <div className={`${styles.board} ${styles[theme]}`} data-testid="kanban-board">
+            <header className={`${styles.header} ${styles[theme]}`} data-testid="board-header">
+                <div className={styles.headerContent}>
+                    <h1 className={`${styles.title} ${styles[theme]}`} data-testid="board-title">
                         Kanban Task Tracker
                     </h1>
                     <button
+                        className={`${styles.themeToggle} ${styles[theme]} theme-toggle-button`}
                         onClick={toggleDarkMode}
-                        style={{
-                            background: darkMode ? '#334155' : '#e2e8f0',
-                            border: 'none',
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '50%',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: darkMode ? '#f1f5f9' : '#1e293b',
-                            fontSize: '18px',
-                            transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = darkMode ? '#475569' : '#cbd5e1';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = darkMode ? '#334155' : '#e2e8f0';
-                        }}
+                        data-testid="theme-toggle-button"
                         aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {darkMode ? '☀️' : '🌙'}
                     </button>
                 </div>
-                <p style={{ color: darkMode ? '#94a3b8' : '#64748b', fontSize: '1.1rem', marginTop: '8px' }}>
+                <p className={`${styles.subtitle} ${styles[theme]}`} data-testid="board-subtitle">
                     Перетаскивайте задачи между колонками
                 </p>
             </header>
 
-            <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className={styles.boardContent} data-testid="board-content">
                 {/* Форма добавления */}
-                <div
-                    style={{
-                        width: '280px',
-                        background: darkMode ? '#1e293b' : '#ffffff',
-                        borderRadius: '16px',
-                        padding: '20px',
-                        boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
-                        border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-                    }}
-                >
-                    <h3 style={{ margin: '0 0 16px', fontSize: '18px', fontWeight: '600', color: darkMode ? '#f1f5f9' : '#1e293b' }}>
+                <div className={`${styles.newTaskForm} ${styles[theme]}`} data-testid="new-task-form">
+                    <h3 className={`${styles.formTitle} ${styles[theme]}`}>
                         ➕ Новая задача
                     </h3>
                     <input
+                        className={`${styles.input} ${styles[theme]} new-task-title-input`}
                         value={newTask.title}
                         onChange={e => setNewTask({ ...newTask, title: e.target.value })}
                         placeholder="Название задачи"
-                        style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            marginBottom: '12px',
-                            border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            outline: 'none',
-                            background: darkMode ? '#0f172a' : 'white',
-                            color: darkMode ? '#f1f5f9' : '#1e293b',
-                            transition: 'border 0.2s',
-                            boxSizing: 'border-box',
-                        }}
-                        onFocus={(e) => {
-                            e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
-                        }}
-                        onBlur={(e) => {
-                            e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
-                        }}
+                        data-testid="new-task-title-input"
+                        aria-label="Task title"
                     />
                     <textarea
+                        className={`${styles.textarea} ${styles[theme]} new-task-description-input`}
                         value={newTask.description}
                         onChange={e => setNewTask({ ...newTask, description: e.target.value })}
                         placeholder="Описание (опционально)"
                         rows={3}
-                        style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            marginBottom: '16px',
-                            border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            outline: 'none',
-                            resize: 'vertical',
-                            background: darkMode ? '#0f172a' : 'white',
-                            color: darkMode ? '#f1f5f9' : '#1e293b',
-                            transition: 'border 0.2s',
-                            boxSizing: 'border-box',
-                        }}
-                        onFocus={(e) => {
-                            e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
-                        }}
-                        onBlur={(e) => {
-                            e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
-                        }}
+                        data-testid="new-task-description-input"
+                        aria-label="Task description"
                     />
                     <input
+                        className={`${styles.dateInput} ${styles[theme]} new-task-deadline-input`}
                         type="datetime-local"
                         value={newTask.deadline || ''}
                         onChange={e => setNewTask({ ...newTask, deadline: e.target.value || null })}
                         placeholder="Дедлайн"
-                        style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            marginBottom: '16px',
-                            border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                            borderRadius: '8px',
-                            fontSize: '14px',
-                            outline: 'none',
-                            background: darkMode ? '#0f172a' : 'white',
-                            color: darkMode ? '#f1f5f9' : '#1e293b',
-                            transition: 'border 0.2s',
-                            boxSizing: 'border-box',
-                        }}
-                        onFocus={(e) => {
-                            e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
-                        }}
-                        onBlur={(e) => {
-                            e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
-                        }}
+                        data-testid="new-task-deadline-input"
+                        aria-label="Task deadline"
                     />
                     <button
+                        className={`${styles.addButton} ${styles[theme]} add-task-button`}
                         onClick={handleAddTask}
                         disabled={!newTask.title.trim()}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            background: newTask.title.trim() ? (darkMode ? '#4f46e5' : '#4f46e5') : (darkMode ? '#334155' : '#cbd5e1'),
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontWeight: '600',
-                            cursor: newTask.title.trim() ? 'pointer' : 'not-allowed',
-                            transition: 'background 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                            if (newTask.title.trim()) {
-                                e.currentTarget.style.background = darkMode ? '#4338ca' : '#4338ca';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (newTask.title.trim()) {
-                                e.currentTarget.style.background = darkMode ? '#4f46e5' : '#4f46e5';
-                            }
-                        }}
+                        data-testid="add-task-button"
+                        aria-label="Add task"
                     >
                         Добавить задачу
                     </button>
                 </div>
 
                 {/* Колонки */}
-                {Object.entries(columnConfig).map(([status, config]) => (
-                    <div key={status} style={{ width: '320px' }}>
-                        <div
-                            style={{
-                                background: darkMode ? config.dark : config.light,
-                                borderRadius: '16px 16px 0 0',
-                                padding: '12px 16px',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-                                color: darkMode ? '#f1f5f9' : '#1e293b',
-                            }}
+                {Object.entries(columnConfig).map(([status, config]) => {
+                    const statusKey = status as TaskStatus;
+                    const columnClass = status === 'in_progress' ? 'inProgress' : status;
+                    
+                    return (
+                        <div 
+                            key={status} 
+                            className={styles.column}
+                            data-testid={`column-${status}`}
                         >
-                            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
-                                {config.title}
-                            </h2>
-                            <span
-                                style={{
-                                    background: darkMode ? '#334155' : 'white',
-                                    color: darkMode ? '#94a3b8' : '#64748b',
-                                    borderRadius: '50%',
-                                    width: '24px',
-                                    height: '24px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                }}
+                            <div className={`${styles.columnHeader} ${styles[columnClass]} ${styles[theme]}`}>
+                                <h2 className={styles.columnTitle} data-testid={`column-title-${status}`}>
+                                    {config.title}
+                                </h2>
+                                <span 
+                                    className={`${styles.columnCount} ${styles[theme]}`}
+                                    data-testid={`column-count-${status}`}
+                                >
+                                    {tasksByStatus[statusKey].length}
+                                </span>
+                            </div>
+                            <div
+                                className={`${styles.columnContent} ${styles[theme]} kanban-column`}
+                                onDragOver={handleDragOver}
+                                onDrop={e => handleDrop(statusKey, e)}
+                                data-testid={`column-content-${status}`}
+                                data-status={status}
                             >
-                                {tasksByStatus[status as TaskStatus].length}
-                            </span>
+                                {tasksByStatus[statusKey].length === 0 ? (
+                                    <div 
+                                        className={`${styles.emptyColumn} ${styles[theme]}`}
+                                        data-testid={`empty-column-${status}`}
+                                    >
+                                        <div>📭 Нет задач</div>
+                                        <div className={styles.emptyColumnText}>
+                                            Перетащите сюда или создайте новую
+                                        </div>
+                                    </div>
+                                ) : (
+                                    tasksByStatus[statusKey].map(task => (
+                                        <TaskCard
+                                            key={task.id}
+                                            task={task}
+                                            onEdit={setEditingTask}
+                                            onDelete={handleDeleteTask}
+                                            darkMode={darkMode}
+                                        />
+                                    ))
+                                )}
+                            </div>
                         </div>
-                        <div
-                            onDragOver={handleDragOver}
-                            onDrop={e => handleDrop(status as TaskStatus, e)}
-                            style={{
-                                minHeight: '500px',
-                                background: darkMode ? '#0f172a' : '#ffffff',
-                                borderRadius: '0 0 16px 16px',
-                                padding: '16px',
-                                boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
-                                border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-                                overflowY: 'auto',
-                            }}
-                        >
-                            {tasksByStatus[status as TaskStatus].length === 0 ? (
-                                <div style={{ textAlign: 'center', color: darkMode ? '#64748b' : '#94a3b8', padding: '20px 0' }}>
-                                    <div>📭 Нет задач</div>
-                                    <div style={{ fontSize: '12px', marginTop: '4px' }}>Перетащите сюда или создайте новую</div>
-                                </div>
-                            ) : (
-                                tasksByStatus[status as TaskStatus].map(task => (
-                                    <TaskCard
-                                        key={task.id}
-                                        task={task}
-                                        onEdit={setEditingTask}
-                                        onDelete={handleDeleteTask}
-                                        darkMode={darkMode}
-                                    />
-                                ))
-                            )}
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Модальное окно редактирования */}
             {editingTask && (
                 <div
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100vw',
-                        height: '100vh',
-                        background: darkMode ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000,
-                    }}
+                    className={`${styles.modal} ${styles[theme]}`}
                     onClick={() => setEditingTask(null)}
+                    data-testid="edit-task-modal"
                 >
                     <div
-                        style={{
-                            background: darkMode ? '#1e293b' : 'white',
-                            borderRadius: '16px',
-                            padding: '24px',
-                            width: '400px',
-                            maxWidth: '90vw',
-                            boxShadow: darkMode ? '0 10px 30px rgba(0,0,0,0.5)' : '0 10px 25px rgba(0,0,0,0.2)',
-                            border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
-                        }}
+                        className={`${styles.modalContent} ${styles[theme]}`}
                         onClick={e => e.stopPropagation()}
+                        data-testid="edit-task-modal-content"
                     >
-                        <h3 style={{ margin: '0 0 20px', fontSize: '20px', fontWeight: '600', color: darkMode ? '#f1f5f9' : '#1e293b' }}>
+                        <h3 className={`${styles.modalTitle} ${styles[theme]}`}>
                             Редактировать задачу
                         </h3>
                         <input
+                            className={`${styles.input} ${styles[theme]} edit-task-title-input`}
                             value={editingTask.title}
                             onChange={e => setEditingTask({ ...editingTask, title: e.target.value })}
                             placeholder="Название задачи"
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                marginBottom: '16px',
-                                border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                                borderRadius: '8px',
-                                fontSize: '16px',
-                                outline: 'none',
-                                background: darkMode ? '#0f172a' : 'white',
-                                color: darkMode ? '#f1f5f9' : '#1e293b',
-                                transition: 'border 0.2s',
-                                boxSizing: 'border-box',
-                            }}
-                            onFocus={(e) => {
-                                e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
-                            }}
+                            data-testid="edit-task-title-input"
+                            aria-label="Edit task title"
                         />
                         <textarea
+                            className={`${styles.textarea} ${styles[theme]} edit-task-description-input`}
                             value={editingTask.description}
                             onChange={e => setEditingTask({ ...editingTask, description: e.target.value })}
                             placeholder="Описание"
                             rows={4}
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                marginBottom: '16px',
-                                border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                outline: 'none',
-                                resize: 'vertical',
-                                background: darkMode ? '#0f172a' : 'white',
-                                color: darkMode ? '#f1f5f9' : '#1e293b',
-                                transition: 'border 0.2s',
-                                boxSizing: 'border-box',
-                            }}
-                            onFocus={(e) => {
-                                e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
-                            }}
+                            data-testid="edit-task-description-input"
+                            aria-label="Edit task description"
                         />
                         <input
+                            className={`${styles.dateInput} ${styles[theme]} edit-task-deadline-input`}
                             type="datetime-local"
                             value={editingTask.deadline || ''}
                             onChange={e => setEditingTask({ ...editingTask, deadline: e.target.value || null })}
                             placeholder="Дедлайн"
-                            style={{
-                                width: '100%',
-                                padding: '12px',
-                                marginBottom: '20px',
-                                border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                outline: 'none',
-                                background: darkMode ? '#0f172a' : 'white',
-                                color: darkMode ? '#f1f5f9' : '#1e293b',
-                                transition: 'border 0.2s',
-                                boxSizing: 'border-box',
-                            }}
-                            onFocus={(e) => {
-                                e.currentTarget.style.border = darkMode ? '1px solid #4f46e5' : '1px solid #4f46e5';
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.style.border = darkMode ? '1px solid #334155' : '1px solid #cbd5e1';
-                            }}
+                            data-testid="edit-task-deadline-input"
+                            aria-label="Edit task deadline"
                         />
-                        <div style={{ display: 'flex', gap: '12px' }}>
+                        <div className={styles.modalButtons}>
                             <button
+                                className={`${styles.saveButton} save-task-button`}
                                 onClick={() => editingTask && handleUpdateTask(editingTask)}
-                                style={{
-                                    flex: 1,
-                                    padding: '10px',
-                                    background: '#4f46e5',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    transition: 'background 0.2s',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = '#4338ca';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background = '#4f46e5';
-                                }}
+                                data-testid="save-task-button"
+                                aria-label="Save task"
                             >
                                 Сохранить
                             </button>
                             <button
+                                className={`${styles.cancelButton} ${styles[theme]} cancel-edit-button`}
                                 onClick={() => setEditingTask(null)}
-                                style={{
-                                    flex: 1,
-                                    padding: '10px',
-                                    background: darkMode ? '#334155' : '#f1f5f9',
-                                    color: darkMode ? '#f1f5f9' : '#1e293b',
-                                    border: darkMode ? '1px solid #334155' : '1px solid #cbd5e1',
-                                    borderRadius: '8px',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    transition: 'background 0.2s',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = darkMode ? '#475569' : '#e2e8f0';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.background = darkMode ? '#334155' : '#f1f5f9';
-                                }}
+                                data-testid="cancel-edit-button"
+                                aria-label="Cancel editing"
                             >
                                 Отмена
                             </button>
