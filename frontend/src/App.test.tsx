@@ -48,7 +48,7 @@ describe('App', () => {
 
         render(<App />);
         const app = screen.getByTestId('app');
-        expect(app).toHaveClass('dark');
+        expect(app).toHaveClass('kt-theme-dark');
     });
 
     it('initializes with saved preference from localStorage', () => {
@@ -56,7 +56,7 @@ describe('App', () => {
 
         render(<App />);
         const app = screen.getByTestId('app');
-        expect(app).toHaveClass('light');
+        expect(app).toHaveClass('kt-theme-light');
     });
 
     it('saves dark mode preference to localStorage', () => {

@@ -280,14 +280,14 @@ describe('KanbanBoard', () => {
         render(<KanbanBoard darkMode={true} toggleDarkMode={mockToggleDarkMode} />);
 
         const board = screen.getByTestId('kanban-board');
-        expect(board).toHaveClass('dark');
+        expect(board).toHaveClass('kt-theme-dark');
     });
 
     it('applies light mode styles', () => {
         render(<KanbanBoard darkMode={false} toggleDarkMode={mockToggleDarkMode} />);
 
         const board = screen.getByTestId('kanban-board');
-        expect(board).toHaveClass('light');
+        expect(board).toHaveClass('kt-theme-light');
     });
 
     it('has proper accessibility labels', () => {

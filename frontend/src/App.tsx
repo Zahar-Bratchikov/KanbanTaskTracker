@@ -46,8 +46,8 @@ export default function App() {
     const theme = darkMode ? 'dark' : 'light';
 
     return (
-        <div 
-            className={`${styles.app} ${styles[theme]}`} 
+        <div
+            className={`kt-app kt-theme-${theme} ${styles.app} ${styles[theme]}`}
             data-testid="app"
         >
             <KanbanBoard darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />

@@ -45,6 +45,16 @@ sudo systemctl enable kanban-task-tracker.service
 Если вы всегда используете VPN-вариант, в файле сервиса в `ExecStart` и `ExecStop` добавьте второй файл:  
 `-f docker-compose.vpn.yml` после `-f docker-compose.yml`.
 
+### Селекторы для UI-тестов
+
+У элементов интерфейса заданы стабильные **классы** (префикс `kt-`) и **data-testid** для тестов (в т.ч. Playwright, Vitest).
+
+- **По data-testid:** `[data-testid="add-task-button"]`, `[data-testid="task-card-1"]`, `[data-testid="column-todo"]`, `[data-testid="edit-task-modal"]` и т.д.
+- **По классам:** `.kt-app`, `.kt-board`, `.kt-new-task-form`, `.kt-task-card`, `.kt-column-todo`, `.kt-theme-toggle`, `.kt-button` и др.
+- **По данным:** у карточки задачи — `data-task-id`, `data-task-status`, `data-task-overdue`; у колонки — `data-column-status`, `data-status`.
+
+Полный список: см. `frontend/src/App.tsx`, `KanbanBoard.tsx`, `TaskCard.tsx`.
+
 ---
 
 ## docker-compose.yml

@@ -108,14 +108,14 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
     }, {} as Record<TaskStatus, Task[]>);
 
     return (
-        <div className={`${styles.board} ${styles[theme]}`} data-testid="kanban-board">
-            <header className={`${styles.header} ${styles[theme]}`} data-testid="board-header">
-                <div className={styles.headerContent}>
-                    <h1 className={`${styles.title} ${styles[theme]}`} data-testid="board-title">
+        <div className={`kt-board kt-theme-${theme} ${styles.board} ${styles[theme]}`} data-testid="kanban-board">
+            <header className={`kt-board-header ${styles.header} ${styles[theme]}`} data-testid="board-header">
+                <div className={`kt-board-header-content ${styles.headerContent}`}>
+                    <h1 className={`kt-board-title ${styles.title} ${styles[theme]}`} data-testid="board-title">
                         Kanban Task Tracker
                     </h1>
                     <button
-                        className={`${styles.themeToggle} ${styles[theme]} theme-toggle-button`}
+                        className={`kt-theme-toggle ${styles.themeToggle} ${styles[theme]}`}
                         onClick={toggleDarkMode}
                         data-testid="theme-toggle-button"
                         aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -123,19 +123,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                         {darkMode ? '☀️' : '🌙'}
                     </button>
                 </div>
-                <p className={`${styles.subtitle} ${styles[theme]}`} data-testid="board-subtitle">
+                <p className={`kt-board-subtitle ${styles.subtitle} ${styles[theme]}`} data-testid="board-subtitle">
                     Перетаскивайте задачи между колонками
                 </p>
             </header>
 
-            <div className={styles.boardContent} data-testid="board-content">
+            <div className={`kt-board-content ${styles.boardContent}`} data-testid="board-content">
                 {/* Форма добавления */}
-                <div className={`${styles.newTaskForm} ${styles[theme]}`} data-testid="new-task-form">
-                    <h3 className={`${styles.formTitle} ${styles[theme]}`}>
+                <section className={`kt-new-task-form ${styles.newTaskForm} ${styles[theme]}`} data-testid="new-task-form">
+                    <h3 className={`kt-new-task-form-title ${styles.formTitle} ${styles[theme]}`} data-testid="new-task-form-title">
                         ➕ Новая задача
                     </h3>
                     <input
-                        className={`${styles.input} ${styles[theme]} new-task-title-input`}
+                        className={`kt-input kt-new-task-title ${styles.input} ${styles[theme]}`}
                         value={newTask.title}
                         onChange={e => setNewTask({ ...newTask, title: e.target.value })}
                         placeholder="Название задачи"
@@ -143,7 +143,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                         aria-label="Task title"
                     />
                     <textarea
-                        className={`${styles.textarea} ${styles[theme]} new-task-description-input`}
+                        className={`kt-textarea kt-new-task-description ${styles.textarea} ${styles[theme]}`}
                         value={newTask.description}
                         onChange={e => setNewTask({ ...newTask, description: e.target.value })}
                         placeholder="Описание (опционально)"
@@ -152,7 +152,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                         aria-label="Task description"
                     />
                     <input
-                        className={`${styles.dateInput} ${styles[theme]} new-task-deadline-input`}
+                        className={`kt-input kt-new-task-deadline ${styles.dateInput} ${styles[theme]}`}
                         type="datetime-local"
                         value={newTask.deadline || ''}
                         onChange={e => setNewTask({ ...newTask, deadline: e.target.value || null })}
@@ -161,7 +161,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                         aria-label="Task deadline"
                     />
                     <button
-                        className={`${styles.addButton} ${styles[theme]} add-task-button`}
+                        className={`kt-button kt-add-task-button ${styles.addButton} ${styles[theme]}`}
                         onClick={handleAddTask}
                         disabled={!newTask.title.trim()}
                         data-testid="add-task-button"
@@ -169,44 +169,47 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                     >
                         Добавить задачу
                     </button>
-                </div>
+                </section>
 
                 {/* Колонки */}
                 {Object.entries(columnConfig).map(([status, config]) => {
                     const statusKey = status as TaskStatus;
                     const columnClass = status === 'in_progress' ? 'inProgress' : status;
-                    
+                    const columnName = status === 'in_progress' ? 'in-progress' : status;
+
                     return (
-                        <div 
-                            key={status} 
-                            className={styles.column}
+                        <article
+                            key={status}
+                            className={`kt-column kt-column-${columnName}`}
                             data-testid={`column-${status}`}
+                            data-column-status={status}
                         >
-                            <div className={`${styles.columnHeader} ${styles[columnClass]} ${styles[theme]}`}>
-                                <h2 className={styles.columnTitle} data-testid={`column-title-${status}`}>
+                            <div className={`kt-column-header ${styles.columnHeader} ${styles[columnClass]} ${styles[theme]}`} data-testid={`column-header-${status}`}>
+                                <h2 className={`kt-column-title ${styles.columnTitle}`} data-testid={`column-title-${status}`}>
                                     {config.title}
                                 </h2>
-                                <span 
-                                    className={`${styles.columnCount} ${styles[theme]}`}
+                                <span
+                                    className={`kt-column-count ${styles.columnCount} ${styles[theme]}`}
                                     data-testid={`column-count-${status}`}
+                                    aria-label={`Количество задач: ${tasksByStatus[statusKey].length}`}
                                 >
                                     {tasksByStatus[statusKey].length}
                                 </span>
                             </div>
                             <div
-                                className={`${styles.columnContent} ${styles[theme]} kanban-column`}
+                                className={`kt-column-content ${styles.columnContent} ${styles[theme]}`}
                                 onDragOver={handleDragOver}
                                 onDrop={e => handleDrop(statusKey, e)}
                                 data-testid={`column-content-${status}`}
                                 data-status={status}
                             >
                                 {tasksByStatus[statusKey].length === 0 ? (
-                                    <div 
-                                        className={`${styles.emptyColumn} ${styles[theme]}`}
+                                    <div
+                                        className={`kt-empty-column ${styles.emptyColumn} ${styles[theme]}`}
                                         data-testid={`empty-column-${status}`}
                                     >
                                         <div>📭 Нет задач</div>
-                                        <div className={styles.emptyColumnText}>
+                                        <div className={`kt-empty-column-hint ${styles.emptyColumnText}`} data-testid={`empty-column-hint-${status}`}>
                                             Перетащите сюда или создайте новую
                                         </div>
                                     </div>
@@ -222,7 +225,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                                     ))
                                 )}
                             </div>
-                        </div>
+                        </article>
                     );
                 })}
             </div>
@@ -230,20 +233,23 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
             {/* Модальное окно редактирования */}
             {editingTask && (
                 <div
-                    className={`${styles.modal} ${styles[theme]}`}
+                    className={`kt-modal kt-edit-task-modal ${styles.modal} ${styles[theme]}`}
                     onClick={() => setEditingTask(null)}
                     data-testid="edit-task-modal"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="edit-task-modal-title"
                 >
                     <div
-                        className={`${styles.modalContent} ${styles[theme]}`}
+                        className={`kt-modal-content ${styles.modalContent} ${styles[theme]}`}
                         onClick={e => e.stopPropagation()}
                         data-testid="edit-task-modal-content"
                     >
-                        <h3 className={`${styles.modalTitle} ${styles[theme]}`}>
+                        <h3 id="edit-task-modal-title" className={`kt-modal-title ${styles.modalTitle} ${styles[theme]}`} data-testid="edit-task-modal-title">
                             Редактировать задачу
                         </h3>
                         <input
-                            className={`${styles.input} ${styles[theme]} edit-task-title-input`}
+                            className={`kt-input kt-edit-task-title ${styles.input} ${styles[theme]}`}
                             value={editingTask.title}
                             onChange={e => setEditingTask({ ...editingTask, title: e.target.value })}
                             placeholder="Название задачи"
@@ -251,7 +257,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                             aria-label="Edit task title"
                         />
                         <textarea
-                            className={`${styles.textarea} ${styles[theme]} edit-task-description-input`}
+                            className={`kt-textarea kt-edit-task-description ${styles.textarea} ${styles[theme]}`}
                             value={editingTask.description}
                             onChange={e => setEditingTask({ ...editingTask, description: e.target.value })}
                             placeholder="Описание"
@@ -260,7 +266,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                             aria-label="Edit task description"
                         />
                         <input
-                            className={`${styles.dateInput} ${styles[theme]} edit-task-deadline-input`}
+                            className={`kt-input kt-edit-task-deadline ${styles.dateInput} ${styles[theme]}`}
                             type="datetime-local"
                             value={editingTask.deadline || ''}
                             onChange={e => setEditingTask({ ...editingTask, deadline: e.target.value || null })}
@@ -268,9 +274,9 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                             data-testid="edit-task-deadline-input"
                             aria-label="Edit task deadline"
                         />
-                        <div className={styles.modalButtons}>
+                        <div className={`kt-modal-buttons ${styles.modalButtons}`} data-testid="edit-task-modal-buttons">
                             <button
-                                className={`${styles.saveButton} save-task-button`}
+                                className={`kt-button kt-save-task-button ${styles.saveButton}`}
                                 onClick={() => editingTask && handleUpdateTask(editingTask)}
                                 data-testid="save-task-button"
                                 aria-label="Save task"
@@ -278,7 +284,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ darkMode, toggleDarkMo
                                 Сохранить
                             </button>
                             <button
-                                className={`${styles.cancelButton} ${styles[theme]} cancel-edit-button`}
+                                className={`kt-button kt-cancel-edit-button ${styles.cancelButton} ${styles[theme]}`}
                                 onClick={() => setEditingTask(null)}
                                 data-testid="cancel-edit-button"
                                 aria-label="Cancel editing"

@@ -29,8 +29,8 @@ describe('TaskCard', () => {
         );
 
         expect(screen.getByTestId('task-card-1')).toBeInTheDocument();
-        expect(screen.getByTestId('task-title')).toHaveTextContent('Test Task');
-        expect(screen.getByTestId('task-description')).toHaveTextContent('Test Description');
+        expect(screen.getByTestId('task-card-title-1')).toHaveTextContent('Test Task');
+        expect(screen.getByTestId('task-card-description-1')).toHaveTextContent('Test Description');
     });
 
     it('displays deadline when present', () => {
@@ -47,7 +47,7 @@ describe('TaskCard', () => {
             />
         );
 
-        expect(screen.getByTestId('task-deadline')).toBeInTheDocument();
+        expect(screen.getByTestId('task-card-deadline-1')).toBeInTheDocument();
     });
 
     it('does not display deadline when not present', () => {
@@ -64,7 +64,7 @@ describe('TaskCard', () => {
             />
         );
 
-        expect(screen.queryByTestId('task-deadline')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('task-card-deadline-1')).not.toBeInTheDocument();
     });
 
     it('calls onEdit when edit button is clicked', () => {
@@ -118,7 +118,7 @@ describe('TaskCard', () => {
         );
 
         const card = screen.getByTestId(`task-card-${task.id}`);
-        expect(card).toHaveClass('todo');
+        expect(card).toHaveClass('kt-task-card--todo');
     });
 
     it('applies correct status class for in_progress', () => {
@@ -134,7 +134,7 @@ describe('TaskCard', () => {
         );
 
         const card = screen.getByTestId(`task-card-${task.id}`);
-        expect(card).toHaveClass('inProgress');
+        expect(card).toHaveClass('kt-task-card--in-progress');
     });
 
     it('applies correct status class for done', () => {
@@ -150,7 +150,7 @@ describe('TaskCard', () => {
         );
 
         const card = screen.getByTestId(`task-card-${task.id}`);
-        expect(card).toHaveClass('done');
+        expect(card).toHaveClass('kt-task-card--done');
     });
 
     it('applies overdue class when task is overdue', () => {
@@ -169,7 +169,7 @@ describe('TaskCard', () => {
         );
 
         const card = screen.getByTestId(`task-card-${task.id}`);
-        expect(card).toHaveClass('overdue');
+        expect(card).toHaveClass('kt-task-card--overdue');
     });
 
     it('does not apply overdue class for done tasks', () => {
@@ -204,7 +204,7 @@ describe('TaskCard', () => {
         );
 
         const card = screen.getByTestId(`task-card-${task.id}`);
-        expect(card).toHaveClass('dark');
+        expect(card).toHaveClass('kt-theme-dark');
     });
 
     it('applies light mode styles when darkMode is false', () => {
@@ -220,7 +220,7 @@ describe('TaskCard', () => {
         );
 
         const card = screen.getByTestId(`task-card-${task.id}`);
-        expect(card).toHaveClass('light');
+        expect(card).toHaveClass('kt-theme-light');
     });
 
     it('is draggable', () => {
