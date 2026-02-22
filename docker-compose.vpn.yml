@@ -1,0 +1,12 @@
+# Переопределение для работы при включённом VPN.
+# Запуск: docker compose -f docker-compose.yml -f docker-compose.vpn.yml up --build
+#
+# Frontend в режиме host — nginx слушает порт 3000 на хосте,
+# обход проброса портов Docker (который часто ломается из-за VPN).
+
+services:
+  frontend:
+    network_mode: host
+    ports: []      # в host-режиме порты не используются
+    volumes:
+      - ./frontend/nginx-3000.conf:/etc/nginx/conf.d/default.conf:ro

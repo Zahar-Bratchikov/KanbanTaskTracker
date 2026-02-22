@@ -15,6 +15,36 @@ docker compose up --build
 API: http://localhost:5000/api/tasks
 Данные сохраняются между перезапусками благодаря volume в PostgreSQL.
 
+### Запуск при включённом VPN
+
+Если при включённом VPN приложение на localhost:3000 не открывается, используйте вариант с сетью хоста:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.vpn.yml up --build
+```
+
+Фронтенд тогда слушает порт 3000 напрямую на хосте, без проброса портов Docker. Открывайте по-прежнему: http://localhost:3000 (или http://127.0.0.1:3000).
+
+Дополнительно: в браузере или системе задайте `NO_PROXY=localhost,127.0.0.1`, чтобы localhost не уходил в прокси/VPN.
+
+### Автозапуск при загрузке системы
+
+Контейнеры настроены с `restart: unless-stopped`: после первого запуска Docker будет поднимать их при перезагрузке.
+
+Чтобы таск-трекер гарантированно поднимался при загрузке системы (даже если вы ни разу не запускали его вручную), можно включить systemd-сервис:
+
+```bash
+# Подставьте свой путь к проекту, если он отличается
+sudo cp /home/zahar/projects/KanbanTaskTracker/kanban-task-tracker.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable kanban-task-tracker.service
+```
+
+После следующей загрузки контейнеры запустятся автоматически. Остановить автозапуск: `sudo systemctl disable kanban-task-tracker.service`.
+
+Если вы всегда используете VPN-вариант, в файле сервиса в `ExecStart` и `ExecStop` добавьте второй файл:  
+`-f docker-compose.vpn.yml` после `-f docker-compose.yml`.
+
 ---
 
 ## docker-compose.yml
