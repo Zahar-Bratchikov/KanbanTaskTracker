@@ -42,8 +42,15 @@ sudo systemctl enable kanban-task-tracker.service
 
 После следующей загрузки контейнеры запустятся автоматически. Остановить автозапуск: `sudo systemctl disable kanban-task-tracker.service`.
 
-Если вы всегда используете VPN-вариант, в файле сервиса в `ExecStart` и `ExecStop` добавьте второй файл:  
-`-f docker-compose.vpn.yml` после `-f docker-compose.yml`.
+**Автозапуск с VPN** (frontend в режиме host, чтобы работало при включённом VPN):
+
+```bash
+sudo cp /home/zahar/projects/KanbanTaskTracker/kanban-task-tracker-vpn.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable kanban-task-tracker-vpn.service
+```
+
+Включайте только один из сервисов: либо `kanban-task-tracker.service`, либо `kanban-task-tracker-vpn.service`.
 
 ### Селекторы для UI-тестов
 
